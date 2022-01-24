@@ -80,9 +80,9 @@ public class SplashScreen extends AppCompatActivity {
             progressDialog.setCancelable(false);
             progressDialog.show();
 
-            List<String> files = Arrays.asList(Environment.getExternalStorageDirectory().list(filter));
+            String[] files = Environment.getExternalStorageDirectory().list(filter);
 
-            Toast.makeText(this, path, Toast.LENGTH_LONG).show();
+//            Toast.makeText(this, path, Toast.LENGTH_LONG).show();
             for(String s: files){
                 if(Files.isRegularFile(Paths.get(path+"/"+s)) && s.endsWith(".epub")){
 //                    Toast.makeText(this, new File(path+"/"+s).getName(), Toast.LENGTH_SHORT).show();
@@ -110,6 +110,8 @@ public class SplashScreen extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+        }else{
+            startActivity(new Intent(this, SplashScreen.class));
         }
 
     }
@@ -126,7 +128,7 @@ public class SplashScreen extends AppCompatActivity {
     public void requestPermissionForReadExternalStorage() throws Exception {
         try {
             ActivityCompat.requestPermissions((Activity) this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     READ_STORAGE_PERMISSION_REQUEST_CODE);
         } catch (Exception e) {
             e.printStackTrace();
