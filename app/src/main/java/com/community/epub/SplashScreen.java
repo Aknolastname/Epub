@@ -119,16 +119,14 @@ public class SplashScreen extends AppCompatActivity {
     public boolean checkPermissionForReadExternalStorage() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             int result = this.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE);
-            int result1 = this.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
+            return result == PackageManager.PERMISSION_GRANTED;
         }
         return false;
     }
 
     public void requestPermissionForReadExternalStorage() throws Exception {
         try {
-            ActivityCompat.requestPermissions((Activity) this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+            ActivityCompat.requestPermissions((Activity) this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
                     READ_STORAGE_PERMISSION_REQUEST_CODE);
         } catch (Exception e) {
             e.printStackTrace();
