@@ -73,6 +73,13 @@ public class SplashScreen extends AppCompatActivity {
             }
         }
 
+        fetchFiles();
+
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void fetchFiles(){
         if(canRead){
             ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setMessage("Loading Ebooks...");
@@ -82,14 +89,16 @@ public class SplashScreen extends AppCompatActivity {
 
             String[] files = Environment.getExternalStorageDirectory().list(filter);
 
-//            Toast.makeText(this, path, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, path, Toast.LENGTH_LONG).show();
             for(String s: files){
-                if(Files.isRegularFile(Paths.get(path+"/"+s)) && s.endsWith(".epub")){
-//                    Toast.makeText(this, new File(path+"/"+s).getName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+
+                if(Files.isRegularFile(Paths.get(path + "/" + s)) && s.endsWith(".epub")){
+//                                        Toast.makeText(this, new File(path+"/"+s).getName(), Toast.LENGTH_SHORT).show();
                     try {
                         InputStream in = new FileInputStream(path+"/"+s);
                         BookItem item = new BookItem();
-//                        copyBookFromAssetsToDevice(path+"/"+s, s);
+                        //                        copyBookFromAssetsToDevice(path+"/"+s, s);
                         item.setPath(path+"/"+s);
                         item.setBook((new EpubReader()).readEpub(in));
                         list.add(item);
@@ -100,7 +109,7 @@ public class SplashScreen extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-//                    list.add(path+"/"+s);
+                    //                    list.add(path+"/"+s);
                 }
                 else if(Files.isDirectory(Paths.get(path+"/"+s))){
                     goUnder(path+"/"+s);
@@ -110,14 +119,16 @@ public class SplashScreen extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-        }else{
-            startActivity(new Intent(this, SplashScreen.class));
         }
-
     }
 
+
     public boolean checkPermissionForReadExternalStorage() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            int result = this.checkSelfPermission(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+            return result == PackageManager.PERMISSION_GRANTED;
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             int result = this.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE);
             return result == PackageManager.PERMISSION_GRANTED;
         }
@@ -126,22 +137,35 @@ public class SplashScreen extends AppCompatActivity {
 
     public void requestPermissionForReadExternalStorage() throws Exception {
         try {
-            ActivityCompat.requestPermissions((Activity) this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
-                    READ_STORAGE_PERMISSION_REQUEST_CODE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                ActivityCompat.requestPermissions((Activity) this, new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE,
+                        Manifest.permission.MANAGE_EXTERNAL_STORAGE},
+                        READ_STORAGE_PERMISSION_REQUEST_CODE);
+            }
+            else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                ActivityCompat.requestPermissions((Activity) this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        READ_STORAGE_PERMISSION_REQUEST_CODE);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull @NotNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == READ_STORAGE_PERMISSION_REQUEST_CODE){
             if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             this.canRead = true;
-            startActivity(new Intent(this, SplashScreen.class));
-            finish();
+            Toast.makeText(this, "m;lcflnl", Toast.LENGTH_SHORT).show();
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+                this.canRead = Environment.isExternalStorageManager();
+            }
+//            startActivity(new Intent(this, SplashScreen.class));
+//            finish();
+            fetchFiles();
         }
     }
 
@@ -150,8 +174,8 @@ public class SplashScreen extends AppCompatActivity {
         String[] files = new File(path1).list(filter);
         if(files!=null && files.length>0){
             for (String s : files) {
-                if (Files.isRegularFile(Paths.get(path1 + "/" + s)) && s.endsWith(".epub")) {
-//                    Toast.makeText(this, new File(path1).getName(), Toast.LENGTH_SHORT).show();
+                if (Files.isRegularFile(Paths.get(path1+"/"+s))  && s.endsWith(".epub")) {
+                    Toast.makeText(this, new File(path1).getName(), Toast.LENGTH_SHORT).show();
                     try {
                         InputStream in = new FileInputStream(path1+"/"+s);
                         BookItem item = new BookItem();
